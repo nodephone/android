@@ -32,6 +32,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+import com.nodephone.android.data.realtime.RealtimeRepository
+import com.nodephone.android.data.realtime.RealtimeRepositoryImpl
+import com.nodephone.android.data.realtime.dao.RealtimeEventDao
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
@@ -77,6 +81,12 @@ abstract class AppModule {
     abstract fun bindBackupRepository(
         impl: BackupRepositoryImpl
     ): BackupRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRealtimeRepository(
+        impl: RealtimeRepositoryImpl
+    ): RealtimeRepository
 
     companion object {
         @Provides
@@ -137,6 +147,14 @@ abstract class AppModule {
             db: NodePhoneDatabase
         ): BackupDao {
             return db.backupDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideRealtimeEventDao(
+            db: NodePhoneDatabase
+        ): RealtimeEventDao {
+            return db.realtimeEventDao()
         }
     }
 }
