@@ -82,11 +82,20 @@ abstract class AppModule {
         impl: BackupRepositoryImpl
     ): BackupRepository
 
+import com.nodephone.android.data.diagnostics.DiagnosticsRepository
+import com.nodephone.android.data.diagnostics.DiagnosticsRepositoryImpl
+
     @Binds
     @Singleton
     abstract fun bindRealtimeRepository(
         impl: RealtimeRepositoryImpl
     ): RealtimeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDiagnosticsRepository(
+        impl: DiagnosticsRepositoryImpl
+    ): DiagnosticsRepository
 
     companion object {
         @Provides
