@@ -8,6 +8,9 @@ import com.nodephone.android.data.local.NodePhoneDatabase
 import com.nodephone.android.data.local.dao.ServerConfigDao
 import com.nodephone.android.data.pairing.PairingRepository
 import com.nodephone.android.data.pairing.PairingRepositoryImpl
+import com.nodephone.android.data.projects.ProjectRepository
+import com.nodephone.android.data.projects.ProjectRepositoryImpl
+import com.nodephone.android.data.projects.dao.ProjectDao
 import com.nodephone.android.data.repository.ServerRepository
 import com.nodephone.android.data.repository.ServerRepositoryImpl
 import com.nodephone.android.data.repository.SettingsRepository
@@ -51,6 +54,12 @@ abstract class AppModule {
         impl: TrustedDeviceRepositoryImpl
     ): TrustedDeviceRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindProjectRepository(
+        impl: ProjectRepositoryImpl
+    ): ProjectRepository
+
     companion object {
         @Provides
         @Singleton
@@ -86,6 +95,14 @@ abstract class AppModule {
             db: NodePhoneDatabase
         ): TrustedDeviceDao {
             return db.trustedDeviceDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideProjectDao(
+            db: NodePhoneDatabase
+        ): ProjectDao {
+            return db.projectDao()
         }
     }
 }
