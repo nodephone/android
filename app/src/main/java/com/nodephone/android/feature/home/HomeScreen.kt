@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
@@ -64,6 +65,7 @@ import java.util.Locale
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToPairing: () -> Unit = {},
+    onNavigateToProjects: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -89,6 +91,13 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToProjects) {
+                        Icon(
+                            imageVector = Icons.Default.Folder,
+                            contentDescription = "Projects",
+                            tint = LimeAccent
+                        )
+                    }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
@@ -119,6 +128,9 @@ fun HomeScreen(
                 onCopyUrl = { copyUrlToClipboard(context, uiState.status.serverUrl) }
             )
 
+            // Active Project Banner Card
+            ActiveProjectBannerCard(onNavigateToProjects = onNavigateToProjects)
+
             // QR Pairing Action Card
             PairingActionCard(onNavigateToPairing = onNavigateToPairing)
 
@@ -143,6 +155,63 @@ fun HomeScreen(
             TelemetryGrid(stats = uiState.stats, status = uiState.status)
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+fun ActiveProjectBannerCard(onNavigateToProjects: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outline,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable(onClick = onNavigateToProjects),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(EmeraldAccent)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "ACTIVE BACKEND PROJECT",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        fontSize = 11.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Default NodePhone App",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            OutlinedButton(
+                onClick = onNavigateToProjects,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Projects Engine →")
+            }
         }
     }
 }
