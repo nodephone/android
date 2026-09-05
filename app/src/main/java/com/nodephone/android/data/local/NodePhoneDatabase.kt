@@ -8,6 +8,8 @@ import com.nodephone.android.data.local.dao.ServerConfigDao
 import com.nodephone.android.data.local.entity.ServerConfigEntity
 import com.nodephone.android.data.projects.dao.ProjectDao
 import com.nodephone.android.data.projects.entity.ProjectEntity
+import com.nodephone.android.data.realtime.dao.RealtimeEventDao
+import com.nodephone.android.data.realtime.entity.RealtimeEventEntity
 import com.nodephone.android.data.storage.dao.StorageDao
 import com.nodephone.android.data.storage.entity.BucketEntity
 import com.nodephone.android.data.storage.entity.FileItemEntity
@@ -21,9 +23,10 @@ import com.nodephone.android.data.trusted.entity.TrustedDeviceEntity
         ProjectEntity::class,
         BucketEntity::class,
         FileItemEntity::class,
-        BackupEntity::class
+        BackupEntity::class,
+        RealtimeEventEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class NodePhoneDatabase : RoomDatabase() {
@@ -32,4 +35,5 @@ abstract class NodePhoneDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun storageDao(): StorageDao
     abstract fun backupDao(): BackupDao
+    abstract fun realtimeEventDao(): RealtimeEventDao
 }
