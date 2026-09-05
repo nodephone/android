@@ -8,6 +8,7 @@ import com.nodephone.android.feature.home.HomeScreen
 import com.nodephone.android.feature.pairing.PairingScreen
 import com.nodephone.android.feature.settings.SettingsScreen
 import com.nodephone.android.feature.splash.SplashScreen
+import com.nodephone.android.feature.trusted.TrustedDevicesScreen
 
 @Composable
 fun NodePhoneNavHost(
@@ -41,11 +42,21 @@ fun NodePhoneNavHost(
             SettingsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToTrustedDevices = {
+                    navController.navigate(Screen.TrustedDevices.route)
                 }
             )
         }
         composable(Screen.Pairing.route) {
             PairingScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.TrustedDevices.route) {
+            TrustedDevicesScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
