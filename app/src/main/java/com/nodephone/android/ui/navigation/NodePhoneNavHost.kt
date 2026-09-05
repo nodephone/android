@@ -9,6 +9,7 @@ import com.nodephone.android.feature.pairing.PairingScreen
 import com.nodephone.android.feature.projects.ProjectsScreen
 import com.nodephone.android.feature.settings.SettingsScreen
 import com.nodephone.android.feature.splash.SplashScreen
+import com.nodephone.android.feature.storage.StorageScreen
 import com.nodephone.android.feature.trusted.TrustedDevicesScreen
 
 @Composable
@@ -39,6 +40,9 @@ fun NodePhoneNavHost(
                 },
                 onNavigateToProjects = {
                     navController.navigate(Screen.Projects.route)
+                },
+                onNavigateToStorage = {
+                    navController.navigate(Screen.Storage.route)
                 }
             )
         }
@@ -68,6 +72,13 @@ fun NodePhoneNavHost(
         }
         composable(Screen.Projects.route) {
             ProjectsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Storage.route) {
+            StorageScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
