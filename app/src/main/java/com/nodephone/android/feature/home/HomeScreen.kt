@@ -6,6 +6,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
+    onNavigateToPairing: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -117,6 +119,9 @@ fun HomeScreen(
                 onCopyUrl = { copyUrlToClipboard(context, uiState.status.serverUrl) }
             )
 
+            // QR Pairing Action Card
+            PairingActionCard(onNavigateToPairing = onNavigateToPairing)
+
             if (uiState.status.state == ServerState.RUNNING) {
                 Text(
                     text = "COMPONENT HEALTH",
@@ -138,6 +143,55 @@ fun HomeScreen(
             TelemetryGrid(stats = uiState.stats, status = uiState.status)
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+fun PairingActionCard(onNavigateToPairing: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                LimeAccent,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable(onClick = onNavigateToPairing),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "PAIR NODEPHONE STUDIO",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = LimeAccent
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Generate QR code or broadcast mDNS for <30s instant pairing",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Button(
+                onClick = onNavigateToPairing,
+                colors = ButtonDefaults.buttonColors(containerColor = LimeAccent, contentColor = Color.Black),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("QR Code", fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

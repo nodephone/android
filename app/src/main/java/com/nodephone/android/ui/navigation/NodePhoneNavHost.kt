@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.nodephone.android.feature.home.HomeScreen
+import com.nodephone.android.feature.pairing.PairingScreen
 import com.nodephone.android.feature.settings.SettingsScreen
 import com.nodephone.android.feature.splash.SplashScreen
 
@@ -30,11 +31,21 @@ fun NodePhoneNavHost(
             HomeScreen(
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToPairing = {
+                    navController.navigate(Screen.Pairing.route)
                 }
             )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Pairing.route) {
+            PairingScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
