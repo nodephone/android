@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.nodephone.android.core.server.NodePhoneServerEngine
 import com.nodephone.android.core.server.NodePhoneServerManager
+import com.nodephone.android.data.backup.BackupRepository
+import com.nodephone.android.data.backup.BackupRepositoryImpl
+import com.nodephone.android.data.backup.dao.BackupDao
 import com.nodephone.android.data.local.NodePhoneDatabase
 import com.nodephone.android.data.local.dao.ServerConfigDao
 import com.nodephone.android.data.pairing.PairingRepository
@@ -69,6 +72,12 @@ abstract class AppModule {
         impl: StorageRepositoryImpl
     ): StorageRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindBackupRepository(
+        impl: BackupRepositoryImpl
+    ): BackupRepository
+
     companion object {
         @Provides
         @Singleton
@@ -120,6 +129,14 @@ abstract class AppModule {
             db: NodePhoneDatabase
         ): StorageDao {
             return db.storageDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideBackupDao(
+            db: NodePhoneDatabase
+        ): BackupDao {
+            return db.backupDao()
         }
     }
 }
