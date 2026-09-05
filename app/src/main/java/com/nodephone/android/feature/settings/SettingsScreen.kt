@@ -35,10 +35,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nodephone.android.domain.model.ThemeMode
+import com.nodephone.android.ui.theme.EmeraldAccent
 import com.nodephone.android.ui.theme.LimeAccent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +48,8 @@ import com.nodephone.android.ui.theme.LimeAccent
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onNavigateToTrustedDevices: () -> Unit = {},
+    onNavigateToDiagnostics: () -> Unit = {},
+    onNavigateToPermissions: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -55,7 +59,7 @@ fun SettingsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "SETTINGS",
+                        text = "SETTINGS & CONTROL CENTER",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -85,30 +89,87 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "SECURITY & PERMISSIONS",
+                text = "DIAGNOSTICS & PERMISSIONS CONTROL",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 modifier = Modifier.padding(top = 8.dp)
             )
 
+            // Diagnostics Hub Navigation Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        1.dp,
-                        LimeAccent,
-                        RoundedCornerShape(12.dp)
-                    )
-                    .clickable(onClick = onNavigateToTrustedDevices),
+                    .border(1.dp, EmeraldAccent, RoundedCornerShape(12.dp))
+                    .clickable(onClick = onNavigateToDiagnostics),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Device Diagnostics & Native Logs",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = EmeraldAccent
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Live hardware stats, ping latency test, log viewer & JSON diagnostic exporter",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text("Control Center →", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = EmeraldAccent)
+                }
+            }
+
+            // Permissions & Battery Optimization Navigation Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, LimeAccent, RoundedCornerShape(12.dp))
+                    .clickable(onClick = onNavigateToPermissions),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Permissions & Battery Optimization",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = LimeAccent
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Manage system permissions & exclude background battery restrictions",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text("Permissions →", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = LimeAccent)
+                }
+            }
+
+            // Trusted Devices Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                    .clickable(onClick = onNavigateToTrustedDevices),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -121,17 +182,12 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Permission Center to view paired devices, rename laptops, or revoke access",
+                            text = "View paired Studio devices, rename laptops, or revoke access",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
-                    Text(
-                        text = "Manage →",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = LimeAccent
-                    )
+                    Text("Manage →", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = LimeAccent)
                 }
             }
 
@@ -148,7 +204,7 @@ fun SettingsScreen(
             )
 
             Text(
-                text = "SERVER CONFIGURATION",
+                text = "SERVER RUNTIME CONFIGURATION",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 modifier = Modifier.padding(top = 8.dp)
@@ -157,69 +213,56 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline,
-                        RoundedCornerShape(12.dp)
-                    ),
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp)),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
+                    SettingToggleRow(
+                        title = "Auto Start on Device Boot",
+                        description = "Automatically boot NodePhone server background service when system starts",
+                        checked = uiState.autoStartOnBoot,
+                        onCheckedChange = { viewModel.setAutoStartOnBoot(it) }
+                    )
+
+                    SettingToggleRow(
+                        title = "Foreground Service Runtime",
+                        description = "Keep background execution active with persistent Notification",
+                        checked = uiState.backgroundRuntimeEnabled,
+                        onCheckedChange = { viewModel.setBackgroundRuntime(it) }
+                    )
+
+                    SettingToggleRow(
+                        title = "mDNS Network Discovery",
+                        description = "Broadcast local _nodephone._tcp mDNS for zero-config Studio discovery",
+                        checked = uiState.mdnsEnabled,
+                        onCheckedChange = { viewModel.setMdnsEnabled(it) }
+                    )
+
+                    SettingToggleRow(
+                        title = "Realtime Event Engine",
+                        description = "Enable live WebSocket event streaming & telemetry monitoring",
+                        checked = uiState.realtimeEnabled,
+                        onCheckedChange = { viewModel.setRealtimeEnabled(it) }
+                    )
+
+                    SettingToggleRow(
+                        title = "Debug Logging Mode",
+                        description = "Capture verbose debug log events in native log viewer",
+                        checked = uiState.debugModeEnabled,
+                        onCheckedChange = { viewModel.setDebugMode(it) }
+                    )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Auto Start on Device Boot",
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "Automatically boot NodePhone background server service when system starts",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        }
-
-                        Switch(
-                            checked = uiState.autoStartOnBoot,
-                            onCheckedChange = { enabled ->
-                                viewModel.setAutoStartOnBoot(enabled)
-                            },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.background,
-                                checkedTrackColor = LimeAccent
-                            )
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Server Port",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "${uiState.port}",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = LimeAccent
-                        )
+                        Text("Server Port", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                        Text("${uiState.port}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = LimeAccent)
                     }
                 }
             }
@@ -234,15 +277,9 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline,
-                        RoundedCornerShape(12.dp)
-                    ),
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp)),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -252,40 +289,51 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = "App Version",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                        Text(
-                            text = uiState.appVersion,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Text("App Version", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                        Text(uiState.appVersion, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = "Server Version",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                        Text(
-                            text = uiState.serverVersion,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = LimeAccent
-                        )
+                        Text("Server Version", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                        Text(uiState.serverVersion, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = LimeAccent)
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+}
+
+@Composable
+fun SettingToggleRow(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+        }
+
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.background,
+                checkedTrackColor = LimeAccent
+            )
+        )
     }
 }
 
@@ -297,49 +345,23 @@ fun ThemeSelectorCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(12.dp)
-            ),
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Theme Preference",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Text("Theme Preference", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ThemeOptionChip(
-                    text = "System",
-                    isSelected = currentThemeMode == ThemeMode.SYSTEM,
-                    onClick = { onThemeSelected(ThemeMode.SYSTEM) },
-                    modifier = Modifier.weight(1f)
-                )
-                ThemeOptionChip(
-                    text = "Dark",
-                    isSelected = currentThemeMode == ThemeMode.DARK,
-                    onClick = { onThemeSelected(ThemeMode.DARK) },
-                    modifier = Modifier.weight(1f)
-                )
-                ThemeOptionChip(
-                    text = "Light",
-                    isSelected = currentThemeMode == ThemeMode.LIGHT,
-                    onClick = { onThemeSelected(ThemeMode.LIGHT) },
-                    modifier = Modifier.weight(1f)
-                )
+                ThemeOptionChip("System", currentThemeMode == ThemeMode.SYSTEM, { onThemeSelected(ThemeMode.SYSTEM) }, Modifier.weight(1f))
+                ThemeOptionChip("Dark", currentThemeMode == ThemeMode.DARK, { onThemeSelected(ThemeMode.DARK) }, Modifier.weight(1f))
+                ThemeOptionChip("Light", currentThemeMode == ThemeMode.LIGHT, { onThemeSelected(ThemeMode.LIGHT) }, Modifier.weight(1f))
             }
         }
     }
@@ -355,9 +377,7 @@ fun ThemeOptionChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(
-                if (isSelected) LimeAccent else MaterialTheme.colorScheme.surfaceVariant
-            )
+            .background(if (isSelected) LimeAccent else MaterialTheme.colorScheme.surfaceVariant)
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
@@ -366,7 +386,7 @@ fun ThemeOptionChip(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) androidx.compose.ui.graphics.Color.Black else MaterialTheme.colorScheme.onSurface
+            color = if (isSelected) Color.Black else MaterialTheme.colorScheme.onSurface
         )
     }
 }

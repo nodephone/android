@@ -14,6 +14,8 @@ import com.nodephone.android.feature.storage.StorageScreen
 import com.nodephone.android.feature.trusted.TrustedDevicesScreen
 
 import com.nodephone.android.feature.realtime.RealtimeScreen
+import com.nodephone.android.feature.diagnostics.DiagnosticsScreen
+import com.nodephone.android.feature.permissions.PermissionsScreen
 
 @Composable
 fun NodePhoneNavHost(
@@ -62,6 +64,12 @@ fun NodePhoneNavHost(
                 },
                 onNavigateToTrustedDevices = {
                     navController.navigate(Screen.TrustedDevices.route)
+                },
+                onNavigateToDiagnostics = {
+                    navController.navigate(Screen.Diagnostics.route)
+                },
+                onNavigateToPermissions = {
+                    navController.navigate(Screen.Permissions.route)
                 }
             )
         }
@@ -102,6 +110,20 @@ fun NodePhoneNavHost(
         }
         composable(Screen.Realtime.route) {
             RealtimeScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Diagnostics.route) {
+            DiagnosticsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Permissions.route) {
+            PermissionsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
