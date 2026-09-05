@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.nodephone.android.feature.backups.BackupsScreen
 import com.nodephone.android.feature.home.HomeScreen
 import com.nodephone.android.feature.pairing.PairingScreen
 import com.nodephone.android.feature.projects.ProjectsScreen
@@ -43,6 +44,9 @@ fun NodePhoneNavHost(
                 },
                 onNavigateToStorage = {
                     navController.navigate(Screen.Storage.route)
+                },
+                onNavigateToBackups = {
+                    navController.navigate(Screen.Backups.route)
                 }
             )
         }
@@ -79,6 +83,13 @@ fun NodePhoneNavHost(
         }
         composable(Screen.Storage.route) {
             StorageScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Backups.route) {
+            BackupsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

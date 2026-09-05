@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.SdStorage
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Share
@@ -68,6 +69,7 @@ fun HomeScreen(
     onNavigateToPairing: () -> Unit = {},
     onNavigateToProjects: () -> Unit = {},
     onNavigateToStorage: () -> Unit = {},
+    onNavigateToBackups: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -93,11 +95,18 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToBackups) {
+                        Icon(
+                            imageVector = Icons.Default.Restore,
+                            contentDescription = "Backups",
+                            tint = LimeAccent
+                        )
+                    }
                     IconButton(onClick = onNavigateToStorage) {
                         Icon(
                             imageVector = Icons.Default.SdStorage,
                             contentDescription = "Storage",
-                            tint = LimeAccent
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     IconButton(onClick = onNavigateToProjects) {
@@ -143,6 +152,9 @@ fun HomeScreen(
             // Storage Manager Action Card
             StorageActionCard(onNavigateToStorage = onNavigateToStorage)
 
+            // Backups Action Card
+            BackupsActionCard(onNavigateToBackups = onNavigateToBackups)
+
             // QR Pairing Action Card
             PairingActionCard(onNavigateToPairing = onNavigateToPairing)
 
@@ -167,6 +179,54 @@ fun HomeScreen(
             TelemetryGrid(stats = uiState.stats, status = uiState.status)
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+fun BackupsActionCard(onNavigateToBackups: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outline,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable(onClick = onNavigateToBackups),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "BACKUP & DISASTER RECOVERY",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = ".npbackup archives, SHA-256 integrity verification, safety snapshots & auto-schedule",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            OutlinedButton(
+                onClick = onNavigateToBackups,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Recovery →")
+            }
         }
     }
 }
