@@ -12,6 +12,9 @@ import com.nodephone.android.data.repository.ServerRepository
 import com.nodephone.android.data.repository.ServerRepositoryImpl
 import com.nodephone.android.data.repository.SettingsRepository
 import com.nodephone.android.data.repository.SettingsRepositoryImpl
+import com.nodephone.android.data.trusted.TrustedDeviceRepository
+import com.nodephone.android.data.trusted.TrustedDeviceRepositoryImpl
+import com.nodephone.android.data.trusted.dao.TrustedDeviceDao
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -42,6 +45,12 @@ abstract class AppModule {
         impl: PairingRepositoryImpl
     ): PairingRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindTrustedDeviceRepository(
+        impl: TrustedDeviceRepositoryImpl
+    ): TrustedDeviceRepository
+
     companion object {
         @Provides
         @Singleton
@@ -69,6 +78,14 @@ abstract class AppModule {
             db: NodePhoneDatabase
         ): ServerConfigDao {
             return db.serverConfigDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideTrustedDeviceDao(
+            db: NodePhoneDatabase
+        ): TrustedDeviceDao {
+            return db.trustedDeviceDao()
         }
     }
 }
