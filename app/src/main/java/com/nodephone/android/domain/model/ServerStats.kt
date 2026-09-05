@@ -5,5 +5,6 @@ data class ServerStats(
     val cpuUsagePercent: Float = 0.0f,
     val memoryUsageMb: Long = 0L,
     val databaseSizeBytes: Long = 0L,
+    val storageUsageBytes: Long = 0L,
     val activeConnections: Int = 0
 )

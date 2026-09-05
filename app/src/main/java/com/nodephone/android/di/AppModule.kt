@@ -2,6 +2,7 @@ package com.nodephone.android.di
 
 import android.content.Context
 import androidx.room.Room
+import com.nodephone.android.core.server.NodePhoneServerEngine
 import com.nodephone.android.core.server.NodePhoneServerManager
 import com.nodephone.android.data.local.NodePhoneDatabase
 import com.nodephone.android.data.local.dao.ServerConfigDao
@@ -36,8 +37,10 @@ abstract class AppModule {
     companion object {
         @Provides
         @Singleton
-        fun provideNodePhoneServerManager(): NodePhoneServerManager {
-            return NodePhoneServerManager()
+        fun provideNodePhoneServerManager(
+            engine: NodePhoneServerEngine
+        ): NodePhoneServerManager {
+            return NodePhoneServerManager(engine)
         }
 
         @Provides
