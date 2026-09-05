@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.nodephone.android.MainActivity
 import com.nodephone.android.core.server.NodePhoneServerManager
 import com.nodephone.android.domain.model.ServerState
+import com.nodephone.android.domain.model.ServerStatus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,18 +59,11 @@ class NodePhoneService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification("NodePhone Server initializing..."))
+        startForeground(NOTIFICATION_ID, buildNotification(ServerStatus()))
 
         serverManager.serverStatus.onEach { status ->
-            val statusText = when (status.state) {
-                ServerState.RUNNING -> "Server Active on port ${status.port}"
-                ServerState.STARTING -> "Starting NodePhone Server..."
-                ServerState.STOPPING -> "Stopping Server..."
-                ServerState.STOPPED -> "Server Offline"
-                ServerState.ERROR -> "Server Error: ${status.errorMessage ?: "Unknown"}"
-            }
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(NOTIFICATION_ID, buildNotification(statusText))
+            notificationManager.notify(NOTIFICATION_ID, buildNotification(status))
         }.launchIn(serviceScope)
     }
 
@@ -106,7 +100,7 @@ class NodePhoneService : Service() {
         }
     }
 
-    private fun buildNotification(content: String): Notification {
+    private fun buildNotification(status: ServerStatus): Notification {
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -114,13 +108,40 @@ class NodePhoneService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("NodePhone Server Runtime")
-            .setContentText(content)
+        val stopIntent = Intent(this, NodePhoneService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this,
+            1,
+            stopIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val contentText = when (status.state) {
+            ServerState.RUNNING -> "Server Live at ${status.serverUrl}"
+            ServerState.STARTING -> "Booting NodePhone Engine..."
+            ServerState.STOPPING -> "Shutting down Server..."
+            ServerState.STOPPED -> "Server Offline"
+            ServerState.ERROR -> "Error: ${status.errorMessage ?: "Unknown failure"}"
+        }
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("NodePhone Embedded Server")
+            .setContentText(contentText)
             .setSmallIcon(android.R.drawable.stat_notify_sync)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
+
+        if (status.state == ServerState.RUNNING) {
+            builder.addAction(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                "Stop Server",
+                stopPendingIntent
+            )
+        }
+
+        return builder.build()
     }
 }
