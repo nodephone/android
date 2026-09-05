@@ -1,12 +1,19 @@
 package com.nodephone.android.di
 
+import android.content.Context
+import androidx.room.Room
 import com.nodephone.android.core.server.NodePhoneServerManager
+import com.nodephone.android.data.local.NodePhoneDatabase
+import com.nodephone.android.data.local.dao.ServerConfigDao
 import com.nodephone.android.data.repository.ServerRepository
 import com.nodephone.android.data.repository.ServerRepositoryImpl
+import com.nodephone.android.data.repository.SettingsRepository
+import com.nodephone.android.data.repository.SettingsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -20,11 +27,37 @@ abstract class AppModule {
         impl: ServerRepositoryImpl
     ): ServerRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(
+        impl: SettingsRepositoryImpl
+    ): SettingsRepository
+
     companion object {
         @Provides
         @Singleton
         fun provideNodePhoneServerManager(): NodePhoneServerManager {
             return NodePhoneServerManager()
+        }
+
+        @Provides
+        @Singleton
+        fun provideNodePhoneDatabase(
+            @ApplicationContext context: Context
+        ): NodePhoneDatabase {
+            return Room.databaseBuilder(
+                context,
+                NodePhoneDatabase::class.java,
+                "nodephone.db"
+            ).fallbackToDestructiveMigration().build()
+        }
+
+        @Provides
+        @Singleton
+        fun provideServerConfigDao(
+            db: NodePhoneDatabase
+        ): ServerConfigDao {
+            return db.serverConfigDao()
         }
     }
 }
