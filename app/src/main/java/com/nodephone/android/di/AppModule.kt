@@ -6,6 +6,8 @@ import com.nodephone.android.core.server.NodePhoneServerEngine
 import com.nodephone.android.core.server.NodePhoneServerManager
 import com.nodephone.android.data.local.NodePhoneDatabase
 import com.nodephone.android.data.local.dao.ServerConfigDao
+import com.nodephone.android.data.pairing.PairingRepository
+import com.nodephone.android.data.pairing.PairingRepositoryImpl
 import com.nodephone.android.data.repository.ServerRepository
 import com.nodephone.android.data.repository.ServerRepositoryImpl
 import com.nodephone.android.data.repository.SettingsRepository
@@ -33,6 +35,12 @@ abstract class AppModule {
     abstract fun bindSettingsRepository(
         impl: SettingsRepositoryImpl
     ): SettingsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPairingRepository(
+        impl: PairingRepositoryImpl
+    ): PairingRepository
 
     companion object {
         @Provides
