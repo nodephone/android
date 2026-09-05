@@ -15,6 +15,9 @@ import com.nodephone.android.data.repository.ServerRepository
 import com.nodephone.android.data.repository.ServerRepositoryImpl
 import com.nodephone.android.data.repository.SettingsRepository
 import com.nodephone.android.data.repository.SettingsRepositoryImpl
+import com.nodephone.android.data.storage.StorageRepository
+import com.nodephone.android.data.storage.StorageRepositoryImpl
+import com.nodephone.android.data.storage.dao.StorageDao
 import com.nodephone.android.data.trusted.TrustedDeviceRepository
 import com.nodephone.android.data.trusted.TrustedDeviceRepositoryImpl
 import com.nodephone.android.data.trusted.dao.TrustedDeviceDao
@@ -60,6 +63,12 @@ abstract class AppModule {
         impl: ProjectRepositoryImpl
     ): ProjectRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindStorageRepository(
+        impl: StorageRepositoryImpl
+    ): StorageRepository
+
     companion object {
         @Provides
         @Singleton
@@ -103,6 +112,14 @@ abstract class AppModule {
             db: NodePhoneDatabase
         ): ProjectDao {
             return db.projectDao()
+        }
+
+        @Provides
+        @Singleton
+        fun provideStorageDao(
+            db: NodePhoneDatabase
+        ): StorageDao {
+            return db.storageDao()
         }
     }
 }
