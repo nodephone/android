@@ -13,6 +13,8 @@ import com.nodephone.android.feature.splash.SplashScreen
 import com.nodephone.android.feature.storage.StorageScreen
 import com.nodephone.android.feature.trusted.TrustedDevicesScreen
 
+import com.nodephone.android.feature.realtime.RealtimeScreen
+
 @Composable
 fun NodePhoneNavHost(
     navController: NavHostController,
@@ -47,6 +49,9 @@ fun NodePhoneNavHost(
                 },
                 onNavigateToBackups = {
                     navController.navigate(Screen.Backups.route)
+                },
+                onNavigateToRealtime = {
+                    navController.navigate(Screen.Realtime.route)
                 }
             )
         }
@@ -90,6 +95,13 @@ fun NodePhoneNavHost(
         }
         composable(Screen.Backups.route) {
             BackupsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Realtime.route) {
+            RealtimeScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

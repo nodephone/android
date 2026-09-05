@@ -62,6 +62,8 @@ import com.nodephone.android.ui.theme.EmeraldAccent
 import com.nodephone.android.ui.theme.LimeAccent
 import java.util.Locale
 
+import androidx.compose.material.icons.filled.Speed
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -70,6 +72,7 @@ fun HomeScreen(
     onNavigateToProjects: () -> Unit = {},
     onNavigateToStorage: () -> Unit = {},
     onNavigateToBackups: () -> Unit = {},
+    onNavigateToRealtime: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -95,11 +98,18 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToRealtime) {
+                        Icon(
+                            imageVector = Icons.Default.Speed,
+                            contentDescription = "Realtime Monitoring",
+                            tint = LimeAccent
+                        )
+                    }
                     IconButton(onClick = onNavigateToBackups) {
                         Icon(
                             imageVector = Icons.Default.Restore,
                             contentDescription = "Backups",
-                            tint = LimeAccent
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     IconButton(onClick = onNavigateToStorage) {
@@ -149,6 +159,9 @@ fun HomeScreen(
             // Active Project Banner Card
             ActiveProjectBannerCard(onNavigateToProjects = onNavigateToProjects)
 
+            // Realtime Event Stream & Telemetry Card
+            RealtimeActionCard(onNavigateToRealtime = onNavigateToRealtime)
+
             // Storage Manager Action Card
             StorageActionCard(onNavigateToStorage = onNavigateToStorage)
 
@@ -179,6 +192,63 @@ fun HomeScreen(
             TelemetryGrid(stats = uiState.stats, status = uiState.status)
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+fun RealtimeActionCard(onNavigateToRealtime: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                EmeraldAccent,
+                RoundedCornerShape(12.dp)
+            )
+            .clickable(onClick = onNavigateToRealtime),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(EmeraldAccent)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "REALTIME MONITOR & PUSH ALERTS",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = EmeraldAccent
+                    )
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Live event stream, hardware gauges, connected Studio clients & local push notifications",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            OutlinedButton(
+                onClick = onNavigateToRealtime,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Monitor →")
+            }
         }
     }
 }
