@@ -2,6 +2,8 @@ package com.nodephone.android.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.nodephone.android.data.backup.dao.BackupDao
+import com.nodephone.android.data.backup.entity.BackupEntity
 import com.nodephone.android.data.local.dao.ServerConfigDao
 import com.nodephone.android.data.local.entity.ServerConfigEntity
 import com.nodephone.android.data.projects.dao.ProjectDao
@@ -18,9 +20,10 @@ import com.nodephone.android.data.trusted.entity.TrustedDeviceEntity
         TrustedDeviceEntity::class,
         ProjectEntity::class,
         BucketEntity::class,
-        FileItemEntity::class
+        FileItemEntity::class,
+        BackupEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class NodePhoneDatabase : RoomDatabase() {
@@ -28,4 +31,5 @@ abstract class NodePhoneDatabase : RoomDatabase() {
     abstract fun trustedDeviceDao(): TrustedDeviceDao
     abstract fun projectDao(): ProjectDao
     abstract fun storageDao(): StorageDao
+    abstract fun backupDao(): BackupDao
 }
