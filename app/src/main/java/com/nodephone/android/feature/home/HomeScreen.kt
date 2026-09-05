@@ -60,8 +60,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val status by viewModel.serverStatus.collectAsState()
-    val stats by viewModel.serverStats.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -107,7 +106,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ServerStatusHeroCard(
-                status = status,
+                status = uiState.status,
                 onToggle = { viewModel.toggleServer(context) },
                 onRestart = { viewModel.restartServer(context) }
             )
@@ -119,7 +118,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            TelemetryGrid(stats = stats, status = status)
+            TelemetryGrid(stats = uiState.stats, status = uiState.status)
 
             Spacer(modifier = Modifier.height(24.dp))
         }

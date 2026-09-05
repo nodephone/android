@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nodephone.android.domain.model.ServerState
-import com.nodephone.android.domain.model.ServerStats
-import com.nodephone.android.domain.model.ServerStatus
 import com.nodephone.android.domain.usecase.GetServerStatusUseCase
 import com.nodephone.android.domain.usecase.ManageServerUseCase
 import com.nodephone.android.service.NodePhoneService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -21,22 +20,22 @@ class HomeViewModel @Inject constructor(
     private val manageServerUseCase: ManageServerUseCase
 ) : ViewModel() {
 
-    val serverStatus: StateFlow<ServerStatus> = getServerStatusUseCase.status
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ServerStatus()
+    val uiState: StateFlow<HomeUiState> = combine(
+        getServerStatusUseCase.status,
+        getServerStatusUseCase.stats
+    ) { status, stats ->
+        HomeUiState(
+            status = status,
+            stats = stats
         )
-
-    val serverStats: StateFlow<ServerStats> = getServerStatusUseCase.stats
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ServerStats()
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeUiState()
+    )
 
     fun toggleServer(context: Context) {
-        val currentState = serverStatus.value.state
+        val currentState = uiState.value.status.state
         if (currentState == ServerState.RUNNING) {
             NodePhoneService.stopService(context)
         } else if (currentState == ServerState.STOPPED) {
