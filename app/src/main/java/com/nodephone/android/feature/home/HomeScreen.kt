@@ -1,5 +1,9 @@
 package com.nodephone.android.feature.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -108,14 +113,26 @@ fun HomeScreen(
             ServerStatusHeroCard(
                 status = uiState.status,
                 onToggle = { viewModel.toggleServer(context) },
-                onRestart = { viewModel.restartServer(context) }
+                onRestart = { viewModel.restartServer(context) },
+                onCopyUrl = { copyUrlToClipboard(context, uiState.status.serverUrl) }
             )
+
+            if (uiState.status.state == ServerState.RUNNING) {
+                Text(
+                    text = "COMPONENT HEALTH",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
+                ComponentHealthGrid(status = uiState.status)
+            }
 
             Text(
                 text = "SYSTEM TELEMETRY",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
 
             TelemetryGrid(stats = uiState.stats, status = uiState.status)
@@ -129,7 +146,8 @@ fun HomeScreen(
 fun ServerStatusHeroCard(
     status: ServerStatus,
     onToggle: () -> Unit,
-    onRestart: () -> Unit
+    onRestart: () -> Unit,
+    onCopyUrl: () -> Unit
 ) {
     val isRunning = status.state == ServerState.RUNNING
     val statusColor = when (status.state) {
@@ -195,9 +213,10 @@ fun ServerStatusHeroCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = if (isRunning) "Background service managing server runtime" else "Tap start to boot local server environment",
+                    text = if (isRunning) status.serverUrl else "Tap start to boot local server environment",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = if (isRunning) LimeAccent else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    fontWeight = if (isRunning) FontWeight.Bold else FontWeight.Normal
                 )
             }
 
@@ -228,6 +247,17 @@ fun ServerStatusHeroCard(
 
                 if (isRunning) {
                     OutlinedButton(
+                        onClick = onCopyUrl,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = "Copy URL",
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    OutlinedButton(
                         onClick = onRestart,
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -239,6 +269,55 @@ fun ServerStatusHeroCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ComponentHealthGrid(status: ServerStatus) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        HealthBadge(title = "Database", isHealthy = status.databaseHealth, modifier = Modifier.weight(1f))
+        HealthBadge(title = "Storage", isHealthy = status.storageHealth, modifier = Modifier.weight(1f))
+        HealthBadge(title = "Realtime", isHealthy = status.realtimeHealth, modifier = Modifier.weight(1f))
+        HealthBadge(title = "Functions", isHealthy = status.functionsHealth, modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun HealthBadge(title: String, isHealthy: Boolean, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.border(
+            1.dp,
+            MaterialTheme.colorScheme.outline,
+            RoundedCornerShape(8.dp)
+        ),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(if (isHealthy) EmeraldAccent else Color(0xFFEF4444))
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -277,7 +356,25 @@ fun TelemetryGrid(stats: ServerStats, status: ServerStatus) {
             TelemetryMetricCard(
                 title = "DATABASE",
                 value = formatBytes(stats.databaseSizeBytes),
-                subtitle = "Local storage size",
+                subtitle = "SQLite database size",
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            TelemetryMetricCard(
+                title = "STORAGE",
+                value = formatBytes(stats.storageUsageBytes),
+                subtitle = "Sandbox storage usage",
+                modifier = Modifier.weight(1f)
+            )
+            TelemetryMetricCard(
+                title = "NETWORK IP",
+                value = status.localIp,
+                subtitle = "Local Wi-Fi interface",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -315,7 +412,8 @@ fun TelemetryMetricCard(
                 text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = LimeAccent
+                color = LimeAccent,
+                fontSize = 18.sp
             )
             Text(
                 text = subtitle,
@@ -326,6 +424,13 @@ fun TelemetryMetricCard(
     }
 }
 
+private fun copyUrlToClipboard(context: Context, url: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("NodePhone Server URL", url)
+    clipboard.setPrimaryClip(clip)
+    Toast.makeText(context, "Server URL copied to clipboard", Toast.LENGTH_SHORT).show()
+}
+
 private fun formatUptime(seconds: Long): String {
     val hrs = seconds / 3600
     val mins = (seconds % 3600) / 60
@@ -334,6 +439,7 @@ private fun formatUptime(seconds: Long): String {
 }
 
 private fun formatBytes(bytes: Long): String {
+    if (bytes <= 0) return "0 MB"
     val mb = bytes / (1024 * 1024)
     return "$mb MB"
 }
